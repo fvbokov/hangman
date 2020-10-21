@@ -1,8 +1,27 @@
 from random import randint
 from os.path import join, dirname
 
+#files---
+assets = join(dirname(__file__), "assets")
+#--------
+
 #functions---
-def find_pos(letter, word): # get positions of letters in word
+def get_lexicon():
+	current_word = ""
+	list_lexicon = []
+
+	with open(join(assets, "words.txt"))as w:
+		lexicon = w.read()
+	for i in lexicon:
+		if(i != "\n"):
+			current_word += i
+		else:
+			list_lexicon.append(current_word)
+			current_word = ""
+		
+	return list_lexicon	
+
+def find_pos(letter, word): ### get positions of letters in word
 	last_pos = 0
 	positions = []
 	last_pos = word.find(letter)
@@ -11,30 +30,19 @@ def find_pos(letter, word): # get positions of letters in word
 		last_pos = word.find(letter, last_pos + 1)
 	return positions	
 
-def print_progress(word, positions): # function prints gaps filled with right letters that have been already guessed
-	for i, letter in zip(range(len(word)), word):
+def print_progress(word, positions): ### function prints gaps filled with right letters that have been already guessed
+	for i, letter in zip(range(len(get_lexicon())), word):
 		if i in positions:
 			print(letter, end=" ")
 		else:
 			print("_", end=" ")	
 #------------
 
-#word list---
-words = [    
-	"alone",
-	"control",
-	"population",
-	"impression",
-	"diamond",
-	"permission"
-]
-#------------
-
 #variables---
-assets = join(dirname(__file__), "assets") ### get those files with hangman progress
-word = words[randint(0, len(words) - 1)] ### hidden word
+word = get_lexicon()[randint(0, len(get_lexicon()) - 1)] ### hidden word
 letters_count = 0 ### how many words in hidden word
 positions = [] ### indexes of guessed words
+guessed_letters = [] ### list of guessed_letters
 mistakes_count = 1 ### how many mistakes player made
 gallows = None ### the gallows texture
 #------------
@@ -44,9 +52,10 @@ phrases = {
 	"letters" : "Letters in word:",
 	"guess" : "Guess the letter:",
 	"input_error" : "You entered too many symbols. Try again",
+	"repeating_symbol" : "You've entered that symbol before",
 	"correct" : "Correct! The letter position is",
 	"incorrect" : "Incorrect!",
-	"loss" : "I'm trying to be gracious, I'm SOOOO sorry, you're dead. Bye",
+	"loss" : "I'm trying to be gracious, I'm SOOOO sorry, you're dead. Bye. The hidden word was:",
 	"win" : "Congratulations on your victory. The hidden word was:"
 }
 #----------
@@ -63,10 +72,18 @@ print(phrases["letters"], letters_count)
 while(mistakes_count < 6): ### main game cycle
 	print(phrases["guess"])
 	letter = input()
+
 	if len(letter) != 1: ### check if only one symbol inputed
 		print(phrases["input_error"])
 		letter = ""
-		
+		continue
+
+	if letter in guessed_letters:
+		print(phrases["repeating_symbol"])
+		continue
+
+	guessed_letters.append(letter) 		
+	
 	if letter in word:
 		positions.extend(find_pos(letter, word))
 		print(phrases["correct"], find_pos(letter, word))
@@ -82,9 +99,10 @@ while(mistakes_count < 6): ### main game cycle
 
 	print("")
 	print_progress(word, positions)
+
 print("")	
 if mistakes_count == 6:
-	print(print["loss"])
+	print(phrases["loss"], word)
 	with open(join(assets, "6.txt")) as f3:
 		gallows = f3.read()
 	print(gallows)

@@ -7,6 +7,6 @@ setup(
     version="1.0",
     description="",
     install_requires=install_requires,
-	package_data={'': ['hangman/assets']},
+	package_data={"hangman": ["assets"]},
     packages=find_packages(),
 )
