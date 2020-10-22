@@ -69,7 +69,7 @@ for i in word: ### count the letters in hidden word
 	letters_count += 1
 print(phrases["letters"], letters_count)
 
-while(mistakes_count < 6): ### main game cycle
+while(mistakes_count < 7): ### main game cycle
 	print(phrases["guess"])
 	letter = input()
 
@@ -101,7 +101,7 @@ while(mistakes_count < 6): ### main game cycle
 	print_progress(word, positions)
 
 print("")	
-if mistakes_count == 6:
+if mistakes_count == 7:
 	print(phrases["loss"], word)
 	with open(join(assets, "6.txt")) as f3:
 		gallows = f3.read()
