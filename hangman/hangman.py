@@ -103,9 +103,6 @@ while(mistakes_count < 7): ### main game cycle
 print("")	
 if mistakes_count == 7:
 	print(phrases["loss"], word)
-	with open(join(assets, "6.txt")) as f3:
-		gallows = f3.read()
-	print(gallows)
 else:
 	print(phrases["win"], word)		
 #---------------
