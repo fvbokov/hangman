@@ -38,18 +38,58 @@ def print_progress(word, positions): ### function prints gaps filled with right 
 			print("_", end=" ")	
 #------------
 
-def play():
+def play(diffuculty = None):
 	#variables---
 	word = get_lexicon()[randint(0, len(get_lexicon()) - 1)] ### hidden word
 	letters_count = 0 ### how many words in hidden word
 	positions = [] ### indexes of guessed words
 	guessed_letters = [] ### list of guessed_letters
-	mistakes_count = 1 ### how many mistakes player made
+	mistakes_count = 0 ### how many mistakes player made
 	gallows = None ### the gallows texture
+	textures = []
+	current_texture = 0
 	#------------
+
+	#graphics---
+	textures_medium = [  
+		"0.txt",
+		"1.txt",
+		"2.txt",
+		"3.txt",
+		"4.txt",
+		"5.txt",
+		"6.txt",
+		"7.txt",
+		"8.txt"
+	]
+
+	textures_hard = [
+		"1.txt",
+		"2.txt",
+		"4.txt",
+		"5.txt",
+		"6.txt",
+		"7.txt",
+		"8.txt"
+	]
+
+	textures_extreme = [
+		"1.txt",
+		"2.txt",
+		"4.txt",
+		"6.txt",
+		"8.txt"
+	]
+	#---------------------
 
 	#phrases---
 	phrases = {
+		"choose_difficulty": "Please choose difficulty level:",
+		"dif_medium" : "1 - Medium",
+		"dif_hard" : "2 - Hard",
+		"dif_extreme" : "3 - Extreme",
+		"dif_number" : "Write a number",
+		"wrong_input" : "Wrong input. Try again. Enter number from 1 to 3 inclusive",
 		"letters" : "Letters in word:",
 		"guess" : "Guess the letter:",
 		"input_error" : "You entered too many symbols. Try again",
@@ -62,15 +102,33 @@ def play():
 	#----------
 
 	#the game progress---
-	with open(join(assets, "0.txt")) as f: ### print gallows w/o body
+	if diffuculty == None:
+		print(phrases["choose_difficulty"], phrases["dif_medium"], phrases["dif_hard"], phrases["dif_extreme"], phrases["dif_number"], sep="\n")
+		diffuculty = int(input())
+
+	while diffuculty > 3 or diffuculty < 1:
+			print(phrases["wrong_input"])
+			diffuculty = int(input)
+
+	if diffuculty == 1:
+		textures = textures_medium
+	if diffuculty == 2:
+		textures = textures_hard
+	if diffuculty == 3:
+		textures = textures_extreme
+	
+
+	with open(join(assets, textures[current_texture])) as f: ### print gallows w/o body
 		gallows = f.read()
 	print(gallows)
+
+	current_texture += 1
 
 	for i in word: ### count the letters in hidden word
 		letters_count += 1
 	print(phrases["letters"], letters_count)
 
-	while(mistakes_count < 7): ### main game cycle
+	while(mistakes_count < len(textures) - 1): ### main game cycle
 		print(phrases["guess"])
 		letter = input()
 
@@ -87,12 +145,13 @@ def play():
 		
 		if letter in word:
 			positions.extend(find_pos(letter, word))
-			print(phrases["correct"], find_pos(letter, word))
+			print(phrases["correct"], str(find_pos(letter, word)[0] + 1))
 		else:
 			print(phrases["incorrect"])
-			with open(join(assets, "{}.txt").format(mistakes_count)) as f2:
+			with open(join(assets, textures[current_texture])) as f2:
 				gallows = f2.read()
 			print(gallows)
+			current_texture += 1
 			mistakes_count += 1
 
 		if len(positions) == len(word): ### check if the word is fully guessed
@@ -102,7 +161,7 @@ def play():
 		print_progress(word, positions)
 
 	print("")	
-	if mistakes_count == 7:
+	if mistakes_count == len(textures) - 1:
 		print(phrases["loss"], word)
 	else:
 		print(phrases["win"], word)		
