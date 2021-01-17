@@ -38,7 +38,7 @@ def print_progress(word, positions): ### function prints gaps filled with right 
 			print("_", end=" ")	
 #------------
 
-def play(diffuculty = None):
+def play(diffuculty = None, pause = False):
 	#variables---
 	word = get_lexicon()[randint(0, len(get_lexicon()) - 1)] ### hidden word
 	letters_count = 0 ### how many words in hidden word
@@ -164,5 +164,7 @@ def play(diffuculty = None):
 	if mistakes_count == len(textures) - 1:
 		print(phrases["loss"], word)
 	else:
-		print(phrases["win"], word)		
+		print(phrases["win"], word)
+	if pause:
+		input()
 	#---------------
